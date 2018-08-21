@@ -1,0 +1,13 @@
+{
+    "name": "YPE",
+	"version": "1",
+    "manifest_version": 2,
+    
+    "description": "Opera extension to manage certain actions of Youtube Playlists and more...",
+    "developer":
+    {
+        "name": "Carlos Maldonado",
+        "url": "https://github.com/CarlosGMI"
+    },
+    "default_locale": "en"
+}
