@@ -1,3 +1,66 @@
-h1{
-    color: red;
+body{
+    width: 500px;
+    height: 300px;
+}
+
+.popupHeader{
+    background-color: #444444;
+    width: 100% !important;
+    height: 15px;
+    margin-bottom: 0 !important;
+    text-align: center;
+}
+
+.popupHeader .extensionName{
+    color: #bbb;
+    font-size: 11px;
+    margin: 0;
+}
+
+.playlistSelection{
+    height: 40%;
+    margin-top: -1px;
+}
+
+.playlistSelection > p{
+    font-size: 15px;
+    background-color: #f1f1f1;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.dropdownPlaylist{
+    margin-top: 0 !important;
+}
+
+.dropdown-content.select-dropdown li{
+    min-height: 20px;
+}
+
+.select-wrapper input.select-dropdown:focus{
+    border-bottom: 1px solid #cc181e !important;
+}
+
+.dropdown-content.select-dropdown li span {
+    color:#cc181e;
+    font-size: 15px !important;
+}
+
+.songSearcher{
+    height: 40%;
+    margin-top: -1px;
+    background-color: blue;
+}
+
+.songSearcher > p{
+    font-size: 15px;
+    background-color: #f1f1f1;
+    border-radius: 12px;
+    text-align: center;
+}
+
+input[type=text]:not(.browser-default):focus:not([readonly]){
+    border-bottom: 1px solid #cc181e !important;
+    -webkit-box-shadow: 0 1px 0 0 #cc181e !important;
+    box-shadow: 0 1px 0 0 #cc181e !important;
 }

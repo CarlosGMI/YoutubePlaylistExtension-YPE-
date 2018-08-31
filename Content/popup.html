@@ -1,8 +1,36 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="../Style/popup.css">
+        <link rel="stylesheet" type="text/css" href="../Style/materialize.css">
     </head>
     <body>
-        <h1>YPE IS ACTIVATED</h1>
+        <div class="row popupHeader">
+            <div class="col s12" style="padding: 0 !important">
+                <p class="extensionName">YoutubePlaylistExtension 0.1</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s6 playlistSelection">
+                <p>Playlists</p>
+                <div class="input-field col s12 dropdownPlaylist">
+                    <select>
+                        <option value="" disabled selected>Playlists</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col s6 songSearcher">
+                <p>Buscar canciones</p>
+                <div class="input-field">
+                    <input placeholder="Cancion / Artista" id="first_name" type="text" class="validate">
+                </div>
+                <a class="waves-effect waves-light btn-small">Button</a>
+            </div>
+        </div>
+        <script type="text/javascript" src="../Scripts/jquery-3.3.1.js"></script>
+        <script type="text/javascript" src="../Scripts/materialize.js"></script>
+        <script type="text/javascript" src="../Scripts/popup.js"></script>
     </body>
 </html>

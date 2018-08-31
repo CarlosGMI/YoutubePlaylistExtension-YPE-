@@ -1,1 +1,1 @@
-console.log("Background script activated");
+/* console.log("Background script activated"); */
