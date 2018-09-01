@@ -1,7 +1,8 @@
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="../Style/popup.css">
         <link rel="stylesheet" type="text/css" href="../Style/materialize.css">
+        <link rel="stylesheet" type="text/css" href="../Style/icon.css">
+        <link rel="stylesheet" type="text/css" href="../Style/popup.css">
     </head>
     <body>
         <div class="row popupHeader">
@@ -23,10 +24,55 @@
             </div>
             <div class="col s6 songSearcher">
                 <p>Buscar canciones</p>
-                <div class="input-field">
-                    <input placeholder="Cancion / Artista" id="first_name" type="text" class="validate">
+                <div class="row">
+                    <form>
+                        <div class="col s8 inputSongSearcher">
+                            <div class="input-field">
+                                <input placeholder="Cancion / Artista" id="first_name" type="text" class="validate">
+                            </div>
+                        </div>
+                        <div class="col s4 buttonSearchSong">
+                            <a class="waves-effect waves-light btn-small buttonSearch">Buscar</a>
+                        </div>
+                    </form>
                 </div>
-                <a class="waves-effect waves-light btn-small">Button</a>
+            </div>
+        </div>
+        <div class="row">
+            <form>
+                <div class="col s6 writeSongs" style="text-align: center">
+                    <p>Anotar canciones</p>
+                    <div class="input-field col s12">
+                        <textarea id="textarea1" class="materialize-textarea writeSongInput"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col s6">
+                            <a class="waves-effect waves-light btn-small buttonWrite">Anotar</a>
+                        </div>
+                        <div class="col s6">
+                            <a class="waves-effect waves-light btn-small buttonWrite">Ver todas</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="col s6 resultSearcher">
+                <p style="margin: 4px 0 10px 0; font-size: 10px;">Existe(n) resultado(s) en tu busqueda:</p>
+                <div class="row" style="margin-bottom: 0">
+                    <div class="col s2" style="padding-right: 0">
+                        <a class="" style="color: #cc181e"><i class="material-icons">delete</i></a>
+                    </div>
+                    <div class="col s10" style="padding-left: 0; margin-top: -9px;">
+                        <p><b>URL: </b> <a style="line-height: 2px;">https://www.youtube.com/watch?v=aPO3Oo1PvoI</a></p>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 0">
+                        <div class="col s2" style="padding-right: 0">
+                            <a class="" style="color: #cc181e"><i class="material-icons">delete</i></a>
+                        </div>
+                        <div class="col s10" style="padding-left: 0; margin-top: -9px;">
+                            <p><b>URL: </b> <a style="line-height: 2px;">https://www.youtube.com/watch?v=aPO3Oo1PvoI</a></p>
+                        </div>
+                </div>
             </div>
         </div>
         <script type="text/javascript" src="../Scripts/jquery-3.3.1.js"></script>

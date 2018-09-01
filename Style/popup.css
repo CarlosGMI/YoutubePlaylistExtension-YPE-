@@ -49,7 +49,22 @@ body{
 .songSearcher{
     height: 40%;
     margin-top: -1px;
-    background-color: blue;
+}
+
+.inputSongSearcher, .buttonSearchSong{
+    height: 68px;
+    margin-top: -14px;
+}
+
+.buttonSearch{
+    margin-top: 24px;
+    width: 100%;
+    padding: 0;
+    background-color: #cc181e;
+}
+
+.buttonSearch:hover{
+    background-color: #cc181e;
 }
 
 .songSearcher > p{
@@ -63,4 +78,43 @@ input[type=text]:not(.browser-default):focus:not([readonly]){
     border-bottom: 1px solid #cc181e !important;
     -webkit-box-shadow: 0 1px 0 0 #cc181e !important;
     box-shadow: 0 1px 0 0 #cc181e !important;
+}
+
+textarea.materialize-textarea:focus:not([readonly]){
+    border-bottom: 1px solid #cc181e !important;
+    -webkit-box-shadow: 0 1px 0 0 #cc181e !important;
+    box-shadow: 0 1px 0 0 #cc181e !important;
+}
+
+.writeSongs, .resultSearcher{
+    margin-top: -20px;
+    height: 145px;
+}
+
+.writeSongs > p{
+    font-size: 15px;
+    background-color: #f1f1f1;
+    border-radius: 12px;
+    text-align: center;
+    margin: 0;
+}
+
+.writeSongInput{
+    font-size: 12px !important;
+    padding: 20px 0 0 0 !important;
+    margin: -20px 0 0 0 !important;
+}
+
+.buttonWrite{
+    margin-top: 10px;
+    background-color: #cc181e;
+}
+
+.buttonWrite:hover{
+    background-color: #cc181e;
+}
+
+[type="checkbox"]:checked + span:not(.lever):before{
+    border-right: 2px solid #559900;
+    border-bottom: 2px solid #559900;
 }
