@@ -10,6 +10,7 @@
         "url": "https://github.com/CarlosGMI"
     },
 
+    "permissions": ["identity", "http://*/*", "https://*/*"],
     "background":
     {
         "scripts": ["Scripts/background.js"],
@@ -20,5 +21,10 @@
         "default_icon": "Media/ypeicon.png",
         "default_title": "YPE",
         "default_popup": "Content/popup.html"
+    },
+    "oauth2":
+    {
+        "client_id": "1068019676011-i8foh6s791hgvalphsesukblafn6src8.apps.googleusercontent.com",
+        "scopes": ["https://www.googleapis.com/auth/youtube"]
     }
 }
