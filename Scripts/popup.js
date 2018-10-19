@@ -78,12 +78,6 @@ async function ValidateTokenRequest(token)
         throw Error("Ha ocurrido un error validando tus credenciales de acceso");
 }
 
-async function getRefreshToken(token)
-{
-    let checkToken = await fetch("https://accounts.google.com/o/oauth2/token?&client_id="+idCliente+"&client_secret=AIzaSyAL5AUBoY46yjT66rnIX3E8e8JlHMr0ies&refresh_token="+token+"&grant_type=refresh_token");
-    console.log(checkToken);
-}
-
 function setCookie(name, value, duration)
 {
     //chrome.cookies.set({"url": "https://*/*", "name": name, "value": value, "expirationDate": duration});
