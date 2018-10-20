@@ -1,6 +1,6 @@
 body{
     width: 500px;
-    height: 300px;
+    height: 300px !important;
 }
 
 .popupHeader{
@@ -117,4 +117,9 @@ textarea.materialize-textarea:focus:not([readonly]){
 [type="checkbox"]:checked + span:not(.lever):before{
     border-right: 2px solid #559900;
     border-bottom: 2px solid #559900;
+}
+
+.dropdown-content{
+    position: relative !important;
+    height: 150px !important;
 }

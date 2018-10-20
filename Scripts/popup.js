@@ -1,6 +1,6 @@
-$(document).ready(function(){
+/* $(document).ready(function(){
     $('select').formSelect();
-});
+}); */
 
 let urlOauth2 = "https://accounts.google.com/o/oauth2/auth?";
 let idCliente = "1068019676011-ioguch2k68ppfhhjk4c34m0gm3falu6m.apps.googleusercontent.com";//"1068019676011-i8foh6s791hgvalphsesukblafn6src8.apps.googleusercontent.com";
@@ -10,6 +10,13 @@ let response_type = "token";
 let authUrl = urlOauth2+'&client_id='+idCliente+'&redirect_uri='+redirect_uri+'&response_type='+response_type+'&scope='+scope;
 
 OperaAuthentication();
+$(function()
+{
+    $('select').formSelect();
+    $('.playlistList').on('contentChanged', function() {
+        $(this).material_select();
+      });
+});
 
 /**
  * Autenticación en Opera.
@@ -150,15 +157,31 @@ function obtenerPlaylists(token, idCanal)
         },
         success: function(data)
         {
+            let playlists = [];
+            for(var i=0;i<data.items.length;i++)
+            {
+                let playlist = {};
+                playlist["id"] = data.items[i].id;
+                playlist["title"] = data.items[i].snippet.title;
+                playlists.push(playlist);
+            }
+            actualizarPlaylistList(playlists);
             //actualizarPlaylistList(data.items[0].id, data.items[0].snippet.title);
-            console.log(JSON.stringify(data.items));
+            /* console.log(JSON.stringify(data.items[0].snippet.title));
+            console.log(JSON.stringify(data.items[1].snippet.title)); */
         }
     });
 }
 
-function actualizarPlaylistList(idPlaylist, nombrePlaylist)
+function actualizarPlaylistList(playlists)
 {
-    console.log("Entro por acá con ID: "+idPlaylist+" --- y nombre: "+nombrePlaylist);
+    for(var i=0;i<playlists.length;i++)
+    {
+        $('#playlistList').append('<option value="'+playlists[i].id+'">'+playlists[i].title+'</option>');
+        $("#playlistList").trigger('contentChanged');
+    }
+    $('select').formSelect();
+    console.log("Entro por acá con: "+JSON.stringify(playlists));
 }
 
 //Autenticación para Chrome
