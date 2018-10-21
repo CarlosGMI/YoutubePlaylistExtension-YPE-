@@ -8,6 +8,7 @@ let redirect_uri = chrome.identity.getRedirectURL("oauth2");//chrome.identity.ge
 let scope = "https://www.googleapis.com/auth/youtube";
 let response_type = "token";
 let authUrl = urlOauth2+'&client_id='+idCliente+'&redirect_uri='+redirect_uri+'&response_type='+response_type+'&scope='+scope;
+let songsInPlaylist = [];
 
 OperaAuthentication();
 $(function()
@@ -74,6 +75,8 @@ function OperaRedirectURL(redirectUrl)
  * token se arroja un error de credenciales de acceso erróneas.
  * 
  * @param {token} var El token de acceso que es extraído del URL de redireccionamiento dado por OAuth2
+ * @returns {json} La respuesta válida del servidor al validar el token
+ * @throws {Error} El error de que el token es inválido y por tanto no se pueden validar credenciales de acceso
  */
 async function ValidateTokenRequest(token) 
 {
@@ -85,20 +88,31 @@ async function ValidateTokenRequest(token)
         throw Error("Ha ocurrido un error validando tus credenciales de acceso");
 }
 
+/**
+ * Creación de cookie.
+ * 
+ * Función que crea una cookie con un nombre determinado, el valor que corresponde al token y una duración determinada.
+ * 
+ * @param {name} var El nombre de la cookie
+ * @param {value} var El valor de la cookie (token)
+ * @param {duration} var La duración o el tiempo de expiración de la cookie  
+ */
 function setCookie(name, value, duration)
 {
-    //chrome.cookies.set({"url": "https://*/*", "name": name, "value": value, "expirationDate": duration});
     document.cookie = name+"="+value+"; max-age="+duration;
 }
 
+/**
+ * Obtención de la YPE cookie.
+ * 
+ * Función que obtiene la cookie de YPE creada previamente.
+ * 
+ * @param {name} var El nombre de la cookie
+ * @returns El valor de la YPE cookie
+ * @returns Un boolean falso si no se encontró la YPE cookie
+ */
 function getCookie(name)
 {
-    //chrome.cookies.get({"url": "https://*/*", "name": name}, function(cookie){
-      //  if(cookie)
-        //    return cookie;
-        //else
-        //    return false;
-    //})
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
     if (parts.length == 2) 
@@ -129,7 +143,15 @@ function getTokenFromURL(url)
     }
 }
 
-//SOLICITUD API PARA OBTENER LOS CANALES CORRESPONDIENTES AL ACCESS TOKEN ESPECIFICADO
+/**
+ * Obtención del canal de Youtube.
+ * 
+ * Función que realiza una petición GET para obtener el canal del usuario autenticado. Antes de enviarse la petición
+ * coloca en el encabezado HTTP el token y al ser exitosa dicha petición, se llama la función que obtiene los playlists
+ * del canal obtenido.
+ * 
+ * @param {token} var El token de acceso
+ */
 function obtenerInfo(token) 
 {
     $.ajax({
@@ -146,10 +168,19 @@ function obtenerInfo(token)
         });
 }
 
+/**
+ * Obtención de los playlists del usuario.
+ * 
+ * Función que realiza una petición GET para obtener los playlists del usuario autenticado. Antes de enviarse la
+ * petición coloca en el encabezado HTTP el token y al ser exitosa dicha petición, se itera sobre el JSON de respuesta
+ * para colocar todos los playlists en un arreglo y llamar la función que actualiza los playlists en la vista del popup.
+ * 
+ * @param {token} var El token de acceso
+ * @param {idCanal} var El ID del canal del usuario autenticado
+ */
 function obtenerPlaylists(token, idCanal)
 {
     $.ajax({
-        //url: "https://www.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=20&id=PL-JD1GaONZFQ8ZSH1yNZVuv27p8EX5mGV",
         url: "https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true&maxResults=20",
         beforeSend: function(xhr)
         {
@@ -166,13 +197,19 @@ function obtenerPlaylists(token, idCanal)
                 playlists.push(playlist);
             }
             actualizarPlaylistList(playlists);
-            //actualizarPlaylistList(data.items[0].id, data.items[0].snippet.title);
-            /* console.log(JSON.stringify(data.items[0].snippet.title));
-            console.log(JSON.stringify(data.items[1].snippet.title)); */
         }
     });
 }
 
+/**
+ * Actualización de los playlists en el popup.
+ * 
+ * Función que actualiza la lista de playlists en la vista del popup. Realiza una iteración sobre un arreglo que contiene
+ * los playlists y agrega una opción a la lista de playlists por playlist existente. Posteriormente se actualiza la lista
+ * para renderizarla en la vista del popup.
+ * 
+ * @param {playlists} var El arreglo que contiene los playlists del usuario autenticado.
+ */
 function actualizarPlaylistList(playlists)
 {
     for(var i=0;i<playlists.length;i++)
@@ -183,6 +220,73 @@ function actualizarPlaylistList(playlists)
     $('select').formSelect();
     console.log("Entro por acá con: "+JSON.stringify(playlists));
 }
+
+/**
+ * Obtención de las canciones en los playlists del usuario.
+ * 
+ * Función que realiza una petición GET para obtener las canciones de los playlists del usuario autenticado. Antes de 
+ * enviarse la petición coloca en el encabezado HTTP el token y al ser exitosa dicha petición, se revisa si el playlist
+ * tiene más de 50 canciones o no para llamar a la función que actualiza el arreglo que contiene la lista de las canciones
+ * de los playlists del usuario autenticado.
+ * 
+ * @param {playlistID} var El ID del playlist del cual se extraerán las canciones
+ * @param {token} var El token de acceso
+ * @param {pageToken} var El token de la siguiente página de canciones del playlist
+ */
+function getSongsInPlaylist(playlistID, token, pageToken)
+{
+    $.ajax({
+        url: "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId="+playlistID+"&pageToken="+pageToken,
+        beforeSend: function(xhr)
+        {
+            xhr.setRequestHeader("Authorization", "OAuth "+token);
+        },
+        success: function(data)
+        {
+            if(data.pageInfo.totalResults > 50)
+                updateSongs(true, data);
+            else
+                updateSongs(false, data);
+/*             console.log("Las canciones en el playlist seleccionado son: "+JSON.stringify(data.nextPageToken));
+            console.log("Las canciones en el playlist seleccionado son: "+JSON.stringify(data.pageInfo.totalResults));
+            console.log("Las canciones en el playlist seleccionado son: "+JSON.stringify(data.items[0].id));
+            console.log("Las canciones en el playlist seleccionado son: "+JSON.stringify(data.items[0].snippet.title));
+ */        }
+    });
+}
+
+function updateSongs(result, songs)
+{
+    if(result)
+    {
+        console.log("Playlist con más de 50 canciones");
+    }
+    else
+    {
+        console.log("Playlist con menos de 50 canciones");
+    }
+}
+
+/**
+ * Listener de la lista de playlists en la vista del popup.
+ * 
+ * Función que, al existir un cambio en la lista de playlists en la vista del popup, llama la función que obtiene las
+ * canciones del playlist seleccionado por el usuario en la vista del popup.
+ * 
+ * @listens event:change
+ */
+$('#playlistList').on('change', function(e) 
+{
+    if(getCookie("YPE") == false)
+        alert("Ha ocurrido un error")
+    else
+        getSongsInPlaylist($('#playlistList').val(), getCookie("YPE"), "");
+});
+
+$(".buttonSearch").click(function()
+{
+    alert("Buscar clicked: "+$("#inputSearch").val());
+});
 
 //Autenticación para Chrome
 // let idCliente = "1068019676011-kt5qv58g0q5krvdeek58q94r9ojrcv7o.apps.googleusercontent.com";
