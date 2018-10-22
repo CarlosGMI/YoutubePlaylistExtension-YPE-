@@ -243,27 +243,50 @@ function getSongsInPlaylist(playlistID, token, pageToken)
         },
         success: function(data)
         {
-            if(data.pageInfo.totalResults > 50)
-                updateSongs(true, data);
-            else
-                updateSongs(false, data);
-/*             console.log("Las canciones en el playlist seleccionado son: "+JSON.stringify(data.nextPageToken));
-            console.log("Las canciones en el playlist seleccionado son: "+JSON.stringify(data.pageInfo.totalResults));
-            console.log("Las canciones en el playlist seleccionado son: "+JSON.stringify(data.items[0].id));
-            console.log("Las canciones en el playlist seleccionado son: "+JSON.stringify(data.items[0].snippet.title));
- */        }
+            updateSongs(data, playlistID, token);
+        },
+        error: function(error)
+        {
+            console.log("Nada que temer por acá");
+        }
     });
 }
 
-function updateSongs(result, songs)
+function updateSongs(songs, playlistID, token)
 {
-    if(result)
+    for(var i=0;i<songs.items.length;i++)
     {
-        console.log("Playlist con más de 50 canciones");
+        let song = {};
+        song["id"] = songs.items[i].id;
+        song["title"] = songs.items[i].snippet.title;
+        songsInPlaylist.push(song);
     }
+    getSongsInPlaylist(playlistID, token, songs.nextPageToken);
+}
+
+function searchSongs(songToSearch)
+{
+    if(songToSearch === "")
+        alert("El campo de busqueda se encuentra vacio");
     else
     {
-        console.log("Playlist con menos de 50 canciones");
+        let results = [];
+        for (var song of songsInPlaylist) 
+        {
+            if (((song.title).toUpperCase()).includes(songToSearch.toUpperCase()))
+                results.push(song);
+        }
+        if(results.length === 0)
+        {
+            $('#exRes').hide();
+            $('#noExRes').show();
+        }
+        else
+        {
+            console.log("Los resultados de la búsqueda fueron: "+JSON.stringify(results));
+            $('#exRes').show();
+            $('#noExRes').hide();
+        }
     }
 }
 
@@ -280,12 +303,16 @@ $('#playlistList').on('change', function(e)
     if(getCookie("YPE") == false)
         alert("Ha ocurrido un error")
     else
+    {
+        songsInPlaylist.splice(0,songsInPlaylist.length);
         getSongsInPlaylist($('#playlistList').val(), getCookie("YPE"), "");
+    }
 });
 
 $(".buttonSearch").click(function()
 {
-    alert("Buscar clicked: "+$("#inputSearch").val());
+    //console.log("Las canciones en el playlist son: "+JSON.stringify(songsInPlaylist));
+    searchSongs($("#inputSearch").val());
 });
 
 //Autenticación para Chrome
