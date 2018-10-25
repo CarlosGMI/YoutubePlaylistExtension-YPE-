@@ -243,10 +243,12 @@ function getSongsInPlaylist(playlistID, token, pageToken)
         },
         success: function(data)
         {
+            $('#inputSearch').prop('disabled', true);
             updateSongs(data, playlistID, token);
         },
         error: function(error)
         {
+            $('#inputSearch').prop('disabled', false);
             console.log("Nada que temer por acá");
         }
     });
@@ -257,7 +259,7 @@ function updateSongs(songs, playlistID, token)
     for(var i=0;i<songs.items.length;i++)
     {
         let song = {};
-        song["id"] = songs.items[i].id;
+        song["id"] = songs.items[i].snippet.resourceId.videoId;
         song["title"] = songs.items[i].snippet.title;
         songsInPlaylist.push(song);
     }
@@ -266,15 +268,29 @@ function updateSongs(songs, playlistID, token)
 
 function searchSongs(songToSearch)
 {
-    if(songToSearch === "")
+    if($('#playlistList').val() === null )
+    {
+        $('#exRes').hide();
+        $('#noExRes').hide();
+        alert("No has seleccionado un playlist");
+    }
+    else if(songToSearch === "")
+    {
+        $('#exRes').hide();
+        $('#noExRes').hide();
         alert("El campo de busqueda se encuentra vacio");
+    }
     else
     {
         let results = [];
         for (var song of songsInPlaylist) 
         {
             if (((song.title).toUpperCase()).includes(songToSearch.toUpperCase()))
+            {
                 results.push(song);
+                //findSpecificSongs(song.id, getCookie("YPE"));
+                $("#songResults").append('<div class="row" style="margin-bottom: 0"><div class="col s2" style="padding-right: 0"><a class="" style="color: #cc181e"><i class="material-icons">delete</i></a></div><div class="col s10" style="padding-left: 0; margin-top: -9px;"><p><b>URL: </b> <a href="https://www.youtube.com/watch?v='+song.id+'" style="line-height: 2px;">https://www.youtube.com/watch?v='+song.id+'</a></p></div></div>');
+            }
         }
         if(results.length === 0)
         {
@@ -290,6 +306,27 @@ function searchSongs(songToSearch)
     }
 }
 
+function findSpecificSongs(songID, token)
+{
+    $(".resultSearcher").append('<div class="row" style="margin-bottom: 0"><div class="col s2" style="padding-right: 0"><a class="" style="color: #cc181e"><i class="material-icons">delete</i></a></div><div class="col s10" style="padding-left: 0; margin-top: -9px;"><p><b>URL: </b> <a href="https://www.youtube.com/watch?v='+songID+'" style="line-height: 2px;">https://www.youtube.com/watch?v='+songID+'</a></p></div></div>');
+   /*  $.ajax({
+        url: "https://www.googleapis.com/youtube/v3/videos/?part=snippet&id="+songID,
+        beforeSend: function(xhr)
+        {
+            xhr.setRequestHeader("Authorization", "OAuth "+token);
+        },
+        success: function(data)
+        {
+            console.log("Canción buscada: "+JSON.stringify(data));
+            $(".resultSearcher").append('<div class="row" style="margin-bottom: 0"><div class="col s2" style="padding-right: 0"><a class="" style="color: #cc181e"><i class="material-icons">delete</i></a></div><div class="col s10" style="padding-left: 0; margin-top: -9px;"><p><b>URL: </b> <a style="line-height: 2px;">https://www.youtube.com/watch?v='+songID+'</a></p></div></div>')
+        },
+        error: function(error)
+        {
+            alert("Ocurrió un error de búsqueda");
+        }
+    }); */
+}
+
 /**
  * Listener de la lista de playlists en la vista del popup.
  * 
@@ -301,10 +338,12 @@ function searchSongs(songToSearch)
 $('#playlistList').on('change', function(e) 
 {
     if(getCookie("YPE") == false)
-        alert("Ha ocurrido un error")
+        alert("No has iniciado sesión")
     else
     {
         songsInPlaylist.splice(0,songsInPlaylist.length);
+        $('#exRes').hide();
+        $('#noExRes').hide();
         getSongsInPlaylist($('#playlistList').val(), getCookie("YPE"), "");
     }
 });
@@ -312,6 +351,7 @@ $('#playlistList').on('change', function(e)
 $(".buttonSearch").click(function()
 {
     //console.log("Las canciones en el playlist son: "+JSON.stringify(songsInPlaylist));
+    $("#songResults").empty();
     searchSongs($("#inputSearch").val());
 });
 
