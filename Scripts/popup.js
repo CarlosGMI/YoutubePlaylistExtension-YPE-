@@ -11,12 +11,12 @@ let authUrl = urlOauth2+'&client_id='+idCliente+'&redirect_uri='+redirect_uri+'&
 let songsInPlaylist = [];
 
 OperaAuthentication();
-$(function()
+$(function () 
 {
     $('select').formSelect();
-    $('.playlistList').on('contentChanged', function() {
+    $('.playlistList').on('contentChanged', function () {
         $(this).material_select();
-      });
+    });
 });
 
 /**
@@ -259,7 +259,8 @@ function updateSongs(songs, playlistID, token)
     for(var i=0;i<songs.items.length;i++)
     {
         let song = {};
-        song["id"] = songs.items[i].snippet.resourceId.videoId;
+        song["videoId"] = songs.items[i].snippet.resourceId.videoId;
+        song["id"] = songs.items[i].id;
         song["title"] = songs.items[i].snippet.title;
         songsInPlaylist.push(song);
     }
@@ -289,7 +290,7 @@ function searchSongs(songToSearch)
             {
                 results.push(song);
                 //findSpecificSongs(song.id, getCookie("YPE"));
-                $("#songResults").append('<div class="row" style="margin-bottom: 0"><div class="col s2" style="padding-right: 0"><a class="" style="color: #cc181e"><i class="material-icons">delete</i></a></div><div class="col s10" style="padding-left: 0; margin-top: -9px;"><p><b>URL: </b> <a href="https://www.youtube.com/watch?v='+song.id+'" style="line-height: 2px;">https://www.youtube.com/watch?v='+song.id+'</a></p></div></div>');
+                $("#songResults").append('<div class="row" style="margin-bottom: 0"><div class="col s2" style="padding-right: 0"><a id="deleteButton" data-value="'+song.id+'" style="cursor: pointer; color: #cc181e;" class="material-icons">delete</a></div><div class="col s10" style="padding-left: 0; margin-top: -9px;"><p><b>URL: </b> <a href="https://www.youtube.com/watch?v='+song.videoId+'" style="line-height: 2px;">https://www.youtube.com/watch?v='+song.videoId+'</a></p></div></div>');
             }
         }
         if(results.length === 0)
@@ -306,25 +307,27 @@ function searchSongs(songToSearch)
     }
 }
 
-function findSpecificSongs(songID, token)
+function deleteVideoFromPlaylist(videoId, token, element)
 {
-    $(".resultSearcher").append('<div class="row" style="margin-bottom: 0"><div class="col s2" style="padding-right: 0"><a class="" style="color: #cc181e"><i class="material-icons">delete</i></a></div><div class="col s10" style="padding-left: 0; margin-top: -9px;"><p><b>URL: </b> <a href="https://www.youtube.com/watch?v='+songID+'" style="line-height: 2px;">https://www.youtube.com/watch?v='+songID+'</a></p></div></div>');
-   /*  $.ajax({
-        url: "https://www.googleapis.com/youtube/v3/videos/?part=snippet&id="+songID,
+    $.ajax({
+        url: "https://www.googleapis.com/youtube/v3/playlistItems?id="+videoId,
+        type: 'DELETE',
         beforeSend: function(xhr)
         {
             xhr.setRequestHeader("Authorization", "OAuth "+token);
         },
         success: function(data)
         {
-            console.log("Canción buscada: "+JSON.stringify(data));
-            $(".resultSearcher").append('<div class="row" style="margin-bottom: 0"><div class="col s2" style="padding-right: 0"><a class="" style="color: #cc181e"><i class="material-icons">delete</i></a></div><div class="col s10" style="padding-left: 0; margin-top: -9px;"><p><b>URL: </b> <a style="line-height: 2px;">https://www.youtube.com/watch?v='+songID+'</a></p></div></div>')
+            songsInPlaylist.splice(0,songsInPlaylist.length);
+            element.parent().parent().remove();
+            alert("La cancion ha sido borrada de forma exitosa");
+            getSongsInPlaylist($('#playlistList').val(), getCookie("YPE"), "");
         },
         error: function(error)
         {
-            alert("Ocurrió un error de búsqueda");
+            alert("Ocurrió un error borrando el video del playlist");
         }
-    }); */
+    });
 }
 
 /**
@@ -353,6 +356,13 @@ $(".buttonSearch").click(function()
     //console.log("Las canciones en el playlist son: "+JSON.stringify(songsInPlaylist));
     $("#songResults").empty();
     searchSongs($("#inputSearch").val());
+});
+
+$(document).on('click', '#deleteButton', function()
+{
+    var confirm = window.confirm("Desea continuar con el borrado?");
+    if(confirm == true)
+        deleteVideoFromPlaylist($(this).data("value"), getCookie("YPE"), $(this));
 });
 
 //Autenticación para Chrome
